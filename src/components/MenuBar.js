@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     },
     appbar: {
         background: 'linear-gradient(45deg, #4c5154 30%, #181d21 90%)',
-        position: 'fixed',   
+        position: 'static',   
     },
     barDiv: {
         flex: 1,
@@ -32,16 +32,16 @@ export default function MenuBar() {
     return(
         <div>
             <AppBar className={classes.appbar}>
-                <Toolbar justifyContent= 'space-between'>
+                <Toolbar justifycontent= 'space-between'>
                     <div className={classes.barDiv}>
                         <Link className={classes.titleLink} href='/'>
                             CovidSQL
                         </Link>
                         <Link className={classes.pageLink} href='/'>
-                            Main Page
+                            United States
                         </Link>
                         <Link className={classes.pageLink} href='/'>
-                            Other page
+                            World
                         </Link>
                     </div>
                 </Toolbar>
