@@ -40,7 +40,7 @@ export default function MenuBar() {
                         <Link className={classes.pageLink} href='/'>
                             United States
                         </Link>
-                        <Link className={classes.pageLink} href='/'>
+                        <Link className={classes.pageLink} href='/World'>
                             World
                         </Link>
                     </div>

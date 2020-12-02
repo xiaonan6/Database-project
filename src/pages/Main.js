@@ -3,6 +3,7 @@ import MenuBar from '../components/MenuBar.js'
 import PropTypes from 'prop-types';
 import { AppBar, Box, Typography, Tabs, Tab } from '@material-ui/core'
 import StatesMap from '../components/StatesMap.js'
+import CountiesMap from '../components/CountiesMap.js'
 
 
 
@@ -35,7 +36,7 @@ export default class Main extends React.Component {
                   <StatesMap cases={1312412512} deaths={21312421}/>
                 </TabPanel>
                 <TabPanel value={this.state.currentTab} index={1}>
-                  Item Two
+                  <CountiesMap/>
                 </TabPanel>
             </>
         )
