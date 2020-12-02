@@ -1,4 +1,6 @@
 import Main from './pages/Main'
+import World from './pages/World'
+
 import {
   BrowserRouter as Router,
   Route,
