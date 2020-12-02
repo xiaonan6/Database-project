@@ -11,6 +11,7 @@ function App() {
     <Router>
       <Switch>
         <Route component={Main} exact path='/'/>
+        <Route component={World} exact path='/World'/>
       </Switch>
     </Router>
   );
