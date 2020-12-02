@@ -4,6 +4,12 @@ import { Card, CardContent, Typography, Divider, Button } from '@material-ui/cor
 
 
 export default class InfoCard extends React.Component{
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: this.props.data,
+        }
+    }
 
     render() {
         return(
@@ -15,17 +21,13 @@ export default class InfoCard extends React.Component{
                         </Typography>
                         <Divider variant='middle'/>
                         <div style={{marginLeft: '15%', marginRight: '15%'}}>
-                        <Typography >
-                            Data 1 goes here, but it is really long so idk what will happen.
-                            <br/>
-                            Data 2 goes here
-                            <br/>
-                            Data 3 goes here
-                        </Typography>
+                            {this.state.data}
                         </div>
-                        <Button variant='contained' color='primary' onClick={() => {console.log("hello")}}>
-                            Reset
-                        </Button>
+                        <div align='center' style={{paddingTop: '5%'}}>
+                            <Button variant='contained' color='primary' onClick={this.props.resetHandler}>
+                                Reset
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
             </>

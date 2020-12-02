@@ -32,7 +32,7 @@ export default class Main extends React.Component {
                   </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.currentTab} index={0}>
-                  <StatesMap/>
+                  <StatesMap cases={1312412512} deaths={21312421}/>
                 </TabPanel>
                 <TabPanel value={this.state.currentTab} index={1}>
                   Item Two

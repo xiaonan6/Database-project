@@ -18,11 +18,25 @@ const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 export default class StatesMap extends React.Component {
     constructor(props) {
         super(props)
+        this.handleReset = this.handleReset.bind(this)
         this.state = {
+            state: "United States",
+            cases: this.props.cases,
+            deaths: this.props.deaths,
+            // add other data
+            data: []
         }
     }
 
+    handleReset() {
+        this.setState({state: "United States"})
+    }
 
+    handleStatePick(newState) {
+        this.setState({state: newState})
+        // query the data with the newState
+
+    }
 
     render() {
         return (
@@ -39,7 +53,7 @@ export default class StatesMap extends React.Component {
                             key={geo.rsmKey}
                             geography={geo}
                             onMouseDownCapture={() => {
-                                console.log(geo.properties.name)
+                                this.handleStatePick(geo.properties.name)
                             }}
                             style={{
                                 default: {
@@ -79,7 +93,7 @@ export default class StatesMap extends React.Component {
                 </ComposableMap>
             </Grid>
             <Grid item xs={3}>
-                <InfoCard title='hee'/>
+                <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data}/>
             </Grid>
         </Grid>
         </>
