@@ -4,7 +4,8 @@ var connection = mysql.createConnection({
     host: 'cis550-project.csaprfnypzpp.us-east-1.rds.amazonaws.com',
     user: 'admin',
     password: 'covid550project',
-    port: '3306'
+    port: '3306',
+    database: 'new_schema'
 })
 
 connection.connect(function(err) {
@@ -13,6 +14,14 @@ connection.connect(function(err) {
         return;
     }
     console.log('Conneced to database.')
+    connection.query("show databases", function (err, rows, fields) {
+        if (err) {
+            console.error(err)
+            return
+        } else {
+            console.log(rows)
+        }
+    })
 })
 
 

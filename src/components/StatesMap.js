@@ -35,7 +35,13 @@ class StatesMap extends React.Component {
     handleStatePick(newState) {
         this.setState({state: newState})
         // query the data with the newState
+        fetch(`http://localhost:8081/stateCases/${newState}`, {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        // .then(info => {
 
+        // })
     }
 
     render() {
