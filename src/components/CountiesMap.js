@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   ComposableMap,
   Geographies,
@@ -9,11 +9,28 @@ import InfoCard from './InfoCard';
 import { Grid } from '@material-ui/core';
 
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
+const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json';
 
-export default class CountiesMap extends React.Component {
+class CountiesMap extends React.Component {
+    constructor(props) {
+        super(props)
+        this.handleReset = this.handleReset.bind(this)
+        this.state = {
+            county: 'United States',
+            cases: this.props.cases,
+            deaths: this.props.deaths,
+            // other data
+            data: []
+        }
+    }
 
+    handleReset() {
+        this.setState({county: 'United States'})
+    }
 
+    handleCountyPick(newCounty) {
+        this.setState({county: newCounty})
+    }
 
 
     render() {
@@ -21,7 +38,7 @@ export default class CountiesMap extends React.Component {
             <>
             <Grid container direction='row' spacing={3}>
                 <Grid item xs={9}>
-                    <ComposableMap projection='geoAlbersUsa'>
+                    <ComposableMap data-tip='' projection='geoAlbersUsa'>
                         <ZoomableGroup>
                             <Geographies geography={geoUrl}>
                                 {({ geographies }) => (
@@ -30,9 +47,14 @@ export default class CountiesMap extends React.Component {
                                             <Geography
                                                 key={geo.rsmKey}
                                                 geography={geo}
+                                                onMouseEnter={() => {
+                                                    this.props.setTooltipContent(`${geo.properties.name}`)
+                                                }}
+                                                onMouseLeave={() => {
+                                                    this.props.setTooltipContent('');
+                                                }}
                                                 onMouseDownCapture={() => {
-                                                    // this.handleCountyPick(geo.properties.name)
-                                                    console.log(geo.properties.name)
+                                                    this.handleCountyPick(geo.properties.name)
                                                 }}
                                                 style={{
                                                     default: {
@@ -56,10 +78,14 @@ export default class CountiesMap extends React.Component {
                     </ComposableMap>
                 </Grid>
                 <Grid item xs>
-                    <InfoCard title={'Counties'}/>
+                    <InfoCard title={this.state.county}/>
                 </Grid>
             </Grid>
             </>
         )
     }
 }
+
+
+
+export default memo(CountiesMap)

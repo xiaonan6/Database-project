@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { geoCentroid } from 'd3-geo';
 import {
   ComposableMap,
@@ -14,12 +14,13 @@ import { Grid } from '@material-ui/core';
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 
-export default class StatesMap extends React.Component {
+class StatesMap extends React.Component {
     constructor(props) {
         super(props)
         this.handleReset = this.handleReset.bind(this)
+        this.handleStatePick = this.handleStatePick.bind(this)
         this.state = {
-            state: "United States",
+            state: 'United States',
             cases: this.props.cases,
             deaths: this.props.deaths,
             // add other data
@@ -28,7 +29,7 @@ export default class StatesMap extends React.Component {
     }
 
     handleReset() {
-        this.setState({state: "United States"})
+        this.setState({state: 'United States'})
     }
 
     handleStatePick(newState) {
@@ -42,7 +43,7 @@ export default class StatesMap extends React.Component {
         <>
         <Grid container direction='row' spacing={3}>
             <Grid item xs={9}>
-                <ComposableMap projection='geoAlbersUsa'>
+                <ComposableMap data-tip='' projection='geoAlbersUsa'>
                     <Geographies geography={geoUrl}>
                         {({ geographies }) => (
                         <>
@@ -50,6 +51,12 @@ export default class StatesMap extends React.Component {
                             <Geography
                                 key={geo.rsmKey}
                                 geography={geo}
+                                onMouseEnter={() => {
+                                    this.props.setTooltipContent(`${geo.properties.name}`)
+                                }}
+                                onMouseLeave={() => {
+                                    this.props.setTooltipContent('');
+                                }}
                                 onMouseDownCapture={() => {
                                     this.handleStatePick(geo.properties.name)
                                 }}
@@ -98,3 +105,5 @@ export default class StatesMap extends React.Component {
         );
     }
 }
+
+export default memo(StatesMap);

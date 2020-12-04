@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { AppBar, Box, Typography, Tabs, Tab } from '@material-ui/core'
 import StatesMap from '../components/StatesMap.js'
 import CountiesMap from '../components/CountiesMap.js'
-
+import ReactToolTip from 'react-tooltip'
 
 
 
@@ -12,7 +12,9 @@ export default class Main extends React.Component {
     constructor(props) {
         super(props);
         this.handleTabSwitch = this.handleTabSwitch.bind(this);
+        this.handleTooltipUpdate = this.handleTooltipUpdate.bind(this);
         this.state = {
+          toolTip: "",
           currentTab: 0
         }
     }
@@ -21,6 +23,9 @@ export default class Main extends React.Component {
       await this.setState({currentTab: newValue})
     }
 
+    handleTooltipUpdate(newValue) {
+      this.setState({toolTip: newValue})
+    }
 
     render() {
         return(
@@ -33,10 +38,12 @@ export default class Main extends React.Component {
                   </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.currentTab} index={0}>
-                  <StatesMap cases={1312412512} deaths={21312421}/>
+                  <StatesMap cases={1312412512} deaths={21312421} setTooltipContent={this.handleTooltipUpdate}/>
+                  <ReactToolTip>{this.state.toolTip}</ReactToolTip>
                 </TabPanel>
                 <TabPanel value={this.state.currentTab} index={1}>
-                  <CountiesMap/>
+                  <CountiesMap setTooltipContent={this.handleTooltipUpdate}/>
+                  <ReactToolTip>{this.state.toolTip}</ReactToolTip>
                 </TabPanel>
             </>
         )
