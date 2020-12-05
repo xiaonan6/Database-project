@@ -28,11 +28,11 @@ connection.connect(function(err) {
 function getDailyIncreaseInfo(req, res)
  {
     var query = `
-    SELECT r.State, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
-    WHERE Date = CURDATE()
-    GROUP BY r.State
-    ORDER BY SUM(u.Confirmed) DESC, r.State ASC;
+        SELECT r.State, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
+        FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
+        WHERE Date = (select Distinct MAX(Date) from US_df)
+        GROUP BY r.State
+        ORDER BY SUM(u.Confirmed) DESC, r.State ASC;
     `
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
