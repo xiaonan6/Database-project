@@ -76,24 +76,21 @@ function getWorldCases(req, res) {
 
 function getRiskyCounties(req, res) {
     var query = `
-    WITH temp AS (SELECT r.County, SUM(u.Confirmed) AS total_Confirmed, SUM(u.Deaths)
-    AS total_Deaths, SUM(u.Recovered) AS total_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
+    WITH temp AS (SELECT r.County, SUM(u.Confirmed) AS total_Confirmed, SUM(u.Deaths) AS total_Deaths, SUM(u.Recovered) AS total_Recovered
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
     GROUP BY r.County)
-    , riskyCounty AS( SELECT r.County
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
-    WHERE Date = CURDATE()
+    , riskyCounty AS( SELECT r.State, r.County, u.Confirmed
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS 
+    WHERE u.Date = (select MAX(Date) from US_df)
     GROUP BY r.State
-    HAVING u.Confirmed > AVG(u.Confirmed))
-    ,Total AS (SELECT r.County, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS
-    today_Deaths, SUM(u.Recovered) AS today_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
-    WHERE Date = CURDATE()
+    HAVING u.Confirmed > (select AVG(u.Confirmed) from US_df u))
+    ,Total AS (SELECT u.Date, r.County, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS 
+    WHERE u.Date = (select MAX(Date) from US_df)
     GROUP BY r.County)
-    SELECT CURDATE() AS Date, a.County, a.today_Confirmed, a.today_Deaths,
-    a.today_Recovered,b.total_Confirmed, b.total_Deaths, b.total_Recovered
+    SELECT a.Date, a.County, a.today_Confirmed, a.today_Deaths, a.today_Recovered,b.total_Confirmed, b.total_Deaths, b.total_Recovered
     FROM Total a join temp b on a.County = b.County
-    WHERE a.County IN (SELECT * FROM riskyCounty);
+    WHERE a.County IN (SELECT County FROM riskyCounty);
     `
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
@@ -110,24 +107,23 @@ function getCountyCasesByCounty(req, res) {
     var query = `
     WITH today AS (SELECT r.County, SUM(u.Confirmed) AS today_Confirmed,
     SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
-    WHERE Date = CURDATE()
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
+    WHERE u.Date = (select MAX(Date) from US_df)
     GROUP BY r.County)
     , total AS (SELECT r.County, SUM(u.Confirmed) AS total_Confirmed, SUM(u.Deaths) AS
     total_Deaths, SUM(u.Recovered) AS total_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
     GROUP BY r.County)
     ,policy AS (SELECT p.County, p.policy_name, p.policy_expiry_date
-    FROM USPolicy p JOIN Regoin r ON p.State = r.State
-    WHERE r.Latitude = “userInputLat” AND r.Longitude = ${county}
+    FROM US_Policy p JOIN US_region_df r ON p.State = r.State
+    WHERE r.County = ${county}$
     GROUP BY p.State
     HAVING p.policy_issue_Date = MAX(p.policy_issue_Date)
     )
     SELECT a.County, p.State, p.policy_name, p.policy_expiry_date, a.today_Confirmed,
     a.today_Deaths, a.today_Recovered,b.total_Confirmed, b.total_Deaths,
     b.total_Recovered
-    FROM today a JOIN total b ON a. County = b.County JOIN policy p ON a.County =
-    p.County;
+    FROM today a JOIN total b ON a.County = b.County JOIN policy p ON a.County = p.County;
     `
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
