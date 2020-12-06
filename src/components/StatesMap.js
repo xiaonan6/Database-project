@@ -9,6 +9,7 @@ import {
 import labels from './StatesMapLabels';
 import InfoCard from './InfoCard';
 import { Grid } from '@material-ui/core';
+import DataContent from './DataContent.js'
 
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
@@ -21,27 +22,39 @@ class StatesMap extends React.Component {
         this.handleStatePick = this.handleStatePick.bind(this)
         this.state = {
             state: 'United States',
-            cases: this.props.cases,
-            deaths: this.props.deaths,
-            // add other data
             data: []
         }
     }
+    
+    componentDidMount() {
 
-    handleReset() {
-        this.setState({state: 'United States'})
     }
 
-    handleStatePick(newState) {
-        this.setState({state: newState})
+    async handleReset() {
+        await this.setState({state: 'United States'})
+        console.log(this.state.state)
+    }
+
+    async handleStatePick(newState) {
+        await this.setState({state: newState})
+        console.log(this.state.state)
         // query the data with the newState
-        fetch(`http://localhost:8081/stateCases/${newState}`, {
+        await fetch(`http://localhost:8081/stateCases/${newState}`, {
             method: 'GET'
         })
         .then(res => res.json())
-        // .then(info => {
-
-        // })
+        .then(infoList => {
+            if (!infoList) return
+            let dataDiv = infoList.map((infoObj, i) =>
+                <>
+                    <DataContent category='Confirmed Cases' value={infoObj.total_Confirmed}/>
+                    <DataContent category='Deaths' value={infoObj.total_Deaths}/>
+                </>
+            )
+            this.setState({data: dataDiv})
+            console.log(this.state.data)
+        })
+        .catch(err => console.log(err))
     }
 
     render() {

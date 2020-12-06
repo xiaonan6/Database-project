@@ -13,7 +13,7 @@ connection.connect(function(err) {
         console.error('Database connection failed: ' + err.stack)
         return;
     }
-    console.log('Conneced to database.')
+    console.log('Connected to database.')
 })
 
 
@@ -37,24 +37,31 @@ function getDailyIncreaseInfo(req, res)
 function getStateCasesByState(req, res) {
     var state = req.params.state
     var query = `
+    With policy AS (SELECT p.PROVINCE_STATE_NAME, p.POLICY_NAME, p.POLICY_ISSUE_DATE, p.POLICY_NOTE_TEXT, p.POLICY_URL
+        FROM US_Policy p JOIN US_region_df r ON p.PROVINCE_STATE_NAME = r.State
+        where p.PROVINCE_STATE_NAME = (select State from US_region_df where State = '${state}')
+        and p.POLICY_ISSUE_DATE = (select MAX(p.POLICY_ISSUE_DATE) from US_Policy p where p.PROVINCE_STATE_NAME = '${state}' GROUP BY p.PROVINCE_STATE_NAME))
     SELECT r.State, SUM(u.Confirmed) AS total_Confirmed, SUM(u.Deaths) AS total_Deaths,
     SUM(u.Recovered) AS total_Recovered
-    FROM USCases u JOIN Region r ON u.FIPS = r.FIPS
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
     GROUP BY r.State
-    HAVING r.State = ${state};
+    HAVING r.State = '${state}';
     `
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
         else {
+            console.log(rows);
             res.json(rows)
         }
     })
 }
 
+
+
 function getWorldCases(req, res) {
     var query = `
     SELECT w.Country, SUM(w.Confirmed) AS total_Confirmed, SUM(w.Deaths) AS total_Deaths, SUM(w.Recovered) AS total_Recovered
-    FROM WorldCases w
+    FROM World_df w
     GROUP BY w.Country
     ORDER BY SUM(w.Confirmed) DESC;
     `
@@ -92,13 +99,40 @@ function getRiskyCounties(req, res) {
     })
 }
 
+function getConfirmCaseAllStates(req, res) {
+    var query = `
+    SELECT r.State, SUM(u.Confirmed) AS total_Confirmed
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
+    GROUP BY r.State;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
 
+function getConfirmDeathAllStates(req, res) {
+    var query = `
+    SELECT r.State, SUM(u.Deaths) AS total_Deaths
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
+    GROUP BY r.State;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
 
 function getCountyCasesByCounty(req, res) {
     var county = req.params.county
     var query = `
-    WITH today AS (SELECT r.County, SUM(u.Confirmed) AS today_Confirmed,
-    SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
+    WITH today AS (SELECT r.State, r.County, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
     FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
     WHERE u.Date = (select MAX(Date) from US_df)
     GROUP BY r.County)
@@ -106,16 +140,17 @@ function getCountyCasesByCounty(req, res) {
     total_Deaths, SUM(u.Recovered) AS total_Recovered
     FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
     GROUP BY r.County)
-    ,policy AS (SELECT p.County, p.policy_name, p.policy_expiry_date
-    FROM US_Policy p JOIN US_region_df r ON p.State = r.State
-    WHERE r.County = ${county}$
-    GROUP BY p.State
-    HAVING p.policy_issue_Date = MAX(p.policy_issue_Date)
+    , policy AS (SELECT r.County,p.PROVINCE_STATE_NAME, p.POLICY_NAME, p.POLICY_ISSUE_DATE, p.POLICY_NOTE_TEXT, p.POLICY_URL
+    FROM US_Policy p JOIN US_region_df r ON p.PROVINCE_STATE_NAME = r.State
+    where p.PROVINCE_STATE_NAME = (select State from US_region_df where County = ${county})
+    and p.POLICY_ISSUE_DATE = (select MAX(p.POLICY_ISSUE_DATE) from US_Policy p where p.PROVINCE_STATE_NAME = (select State from US_region_df where County = ${county}) GROUP BY p.PROVINCE_STATE_NAME)
     )
-    SELECT a.County, p.State, p.policy_name, p.policy_expiry_date, a.today_Confirmed,
+    SELECT p.County, p.POLICY_NAME, p.POLICY_NOTE_TEXT, p.POLICY_URL, a.today_Confirmed,
     a.today_Deaths, a.today_Recovered,b.total_Confirmed, b.total_Deaths,
     b.total_Recovered
-    FROM today a JOIN total b ON a.County = b.County JOIN policy p ON a.County = p.County;
+    FROM today a JOIN total b ON a.County = b.County JOIN policy p ON a.County = p.County
+    where p.County = '${county}';
+    
     `
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
@@ -130,5 +165,7 @@ module.exports = {
     getStateCasesByState: getStateCasesByState,
     getWorldCases: getWorldCases,
     getRiskyCounties: getRiskyCounties,
-    getCountyCasesByCounty: getCountyCasesByCounty
+    getCountyCasesByCounty: getCountyCasesByCounty,
+    getConfirmCaseAllStates: getConfirmCaseAllStates,
+    getConfirmDeathAllStates: getConfirmDeathAllStates,
 }
