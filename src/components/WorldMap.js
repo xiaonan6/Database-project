@@ -22,8 +22,6 @@ export default class WorldMap extends React.Component {
         }
     }
 
-
-
     render() {
         return (
             <>
