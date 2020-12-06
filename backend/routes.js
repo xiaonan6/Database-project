@@ -14,14 +14,6 @@ connection.connect(function(err) {
         return;
     }
     console.log('Conneced to database.')
-    connection.query("show databases", function (err, rows, fields) {
-        if (err) {
-            console.error(err)
-            return
-        } else {
-            console.log(rows)
-        }
-    })
 })
 
 

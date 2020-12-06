@@ -19,7 +19,6 @@ app.get('/riskyCounties', routes.getRiskyCounties);
 
 app.get('/countyCases/:county', routes.getCountyCasesByCounty);
 
-
 app.listen(8081, ()=> {
     console.log('Server listening on PORT 8081');
 })
