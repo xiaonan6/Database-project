@@ -39,7 +39,7 @@ class StatesMap extends React.Component {
         await this.setState({state: newState})
         console.log(this.state.state)
         // query the data with the newState
-        await fetch(`http://localhost:8081/stateCases/${newState}`, {
+        await fetch(`http://192.168.1.235:8081/stateCases/${newState}`, {
             method: 'GET'
         })
         .then(res => res.json())
