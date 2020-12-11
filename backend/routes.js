@@ -126,7 +126,7 @@ function getCountyCasesByCounty(req, res) {
     WITH yesterday AS (select u.FIPS, r.State, r.County, u.Confirmed AS yesterday_Confirmed, u.Deaths AS yesterday_Deaths, u.Recovered AS yesterday_Recovered, 
         DATE_ADD(u.Date, INTERVAL 1 DAY) as Date
         from US_df u join US_region_df r ON u.FIPS = r.FIPS
-        where r.State = '${county}')
+        where r.County = '${county}')
         SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
         (u.Confirmed - y.yesterday_Confirmed) as today_Confirmed, (u.Deaths - y.yesterday_Deaths) as today_Deaths, 
         (u.Recovered - y.yesterday_Recovered) as today_Recovered

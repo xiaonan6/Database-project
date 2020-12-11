@@ -7,6 +7,7 @@ import {
 } from 'react-simple-maps';
 import InfoCard from './InfoCard';
 import { Grid } from '@material-ui/core';
+import DataContent from './DataContent';
 
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json';
@@ -24,12 +25,24 @@ class CountiesMap extends React.Component {
         }
     }
 
-    handleReset() {
-        this.setState({county: 'United States'})
+    async handleReset() {
+        await this.setState({county: 'United States', data: []})
     }
 
-    handleCountyPick(newCounty) {
-        this.setState({county: newCounty})
+    async handleCountyPick(newCounty) {
+        await this.setState({county: newCounty})
+        // await fetch(`http://localhost:8081/stateCases/${newCounty}`, {
+        //     method: 'GET'
+        // })
+        // .then(res => res.json())
+        // .then(infoList => {
+        //     if (!infoList) return
+        //     let dataDiv = infoList.map((infoObj, i) =>
+        //         <>
+        //             <DataContent 
+        //         </>
+        //     )
+        // })
     }
 
 

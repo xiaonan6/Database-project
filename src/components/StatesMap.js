@@ -15,6 +15,7 @@ import DataContent from './DataContent.js'
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
 
 
+
 class StatesMap extends React.Component {
     constructor(props) {
         super(props)
@@ -22,24 +23,37 @@ class StatesMap extends React.Component {
         this.handleStatePick = this.handleStatePick.bind(this)
         this.state = {
             state: 'United States',
+            riskyList: [],
             data: []
         }
     }
     
-    componentDidMount() {
-
+    async componentDidMount() {
+        await fetch(`http://localhost:8081/riskyStates`, {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        .then(infoList => {
+            if (!infoList) return
+            let dataDiv = infoList.map((infoObj, i) => 
+            <>
+                <DataContent category={i+1} value={infoObj.State}/>
+            </>
+            )
+            this.setState({riskyList: dataDiv})
+        })
+        .catch(err => console.log(err))
     }
 
     async handleReset() {
-        await this.setState({state: 'United States'})
-        console.log(this.state.state)
+        await this.setState({state: 'United States', data: []})
     }
 
     async handleStatePick(newState) {
         await this.setState({state: newState})
-        console.log(this.state.state)
+        
         // query the data with the newState
-        await fetch(`http://192.168.1.235:8081/stateCases/${newState}`, {
+        await fetch(`http://localhost:8081/stateCases/${newState}`, {
             method: 'GET'
         })
         .then(res => res.json())
@@ -49,6 +63,8 @@ class StatesMap extends React.Component {
                 <>
                     <DataContent category='Confirmed Cases' value={infoObj.total_Confirmed}/>
                     <DataContent category='Deaths' value={infoObj.total_Deaths}/>
+                    <DataContent category="Today's Confirmed" value={infoObj.total_Confirmed}/>
+                    <DataContent category="Today's Deaths" value={infoObj.total_Deaths}/>
                 </>
             )
             this.setState({data: dataDiv})
@@ -117,6 +133,7 @@ class StatesMap extends React.Component {
             </Grid>
             <Grid item xs={3}>
                 <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data}/>
+                <InfoCard title={'Top 10 Risky States'} resetHandler={this.handleReset} data={this.state.riskyList} display='none'/>
             </Grid>
         </Grid>
         </>
