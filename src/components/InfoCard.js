@@ -16,6 +16,7 @@ export default function InfoCard(props){
                         <Divider variant='middle'/>
                         <div style={{marginLeft: '15%', marginRight: '15%', paddingTop: 10}}>
                             {props.data}
+                            {props.data2}
                         </div>
                         <div align='center' style={{paddingTop: '5%'}}>
                             <Button variant='contained' color='primary' onClick={props.resetHandler} style={{display: show}}>

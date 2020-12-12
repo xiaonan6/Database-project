@@ -24,7 +24,9 @@ class StatesMap extends React.Component {
         this.state = {
             state: 'United States',
             riskyList: [],
-            data: []
+            data: [],
+            allPolicy: [],
+            policyDisplay: [],
         }
     }
     
@@ -46,11 +48,11 @@ class StatesMap extends React.Component {
     }
 
     async handleReset() {
-        await this.setState({state: 'United States', data: []})
+        await this.setState({state: 'United States', data: [], allPolicy: [], policyDisplay: []})
     }
 
     async handleStatePick(newState) {
-        await this.setState({state: newState})
+        await this.setState({state: newState, policyDisplay: ["None"]})
         
         // query the data with the newState
         await fetch(`http://localhost:8081/stateCases/${newState}`, {
@@ -69,6 +71,32 @@ class StatesMap extends React.Component {
             )
             this.setState({data: dataDiv})
             console.log(this.state.data)
+        })
+        .catch(err => console.log(err))
+
+        await fetch(`http://localhost:8081/statePolicy/${newState}`, {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        .then(infoList => {
+            if (!infoList) return
+            if (infoList.length !== 0) {
+                if (infoList.length > 1) {
+                    //view more
+                    let dataDiv = 
+                    <>
+                        <DataContent category='Policy' value={infoList[0].POLICY_NAME} link={infoList[0].POLICY_URL}/>
+                    </>;
+                    this.setState({policyDisplay: dataDiv})
+                } else {
+                    let dataDiv = 
+                    <>
+                        <DataContent category='Policy' value={infoList[0].POLICY_NAME} link={infoList[0].POLICY_URL}/>
+                    </>;
+                    this.setState({policyDisplay: dataDiv})
+                }
+                // map allPolicy
+            }
         })
         .catch(err => console.log(err))
     }
@@ -132,7 +160,7 @@ class StatesMap extends React.Component {
                 </ComposableMap>
             </Grid>
             <Grid item xs={3}>
-                <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data}/>
+                <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data} data2={this.state.policyDisplay}/>
                 <InfoCard title={'Top 10 Risky States'} resetHandler={this.handleReset} data={this.state.riskyList} display='none'/>
             </Grid>
         </Grid>

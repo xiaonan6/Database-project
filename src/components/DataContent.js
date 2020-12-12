@@ -7,7 +7,7 @@ export default class DataContent extends React.Component {
         return (
             <>
                 <Typography variant='body2'>
-                   <b>{this.props.category}:</b> {this.props.value} <br/>
+                  <span> <b>{this.props.category}:</b> <a href={this.props.link} rel="noreferrer" target="_blank">{this.props.value}</a> </span> <br/>
                 </Typography>
             </>
         )

@@ -13,7 +13,7 @@ app.get('/stateCases/:state', routes.getStateCasesByState); //for state block1: 
 
 app.get('/statePolicy/:state', routes.getStatePolicy); //for state block1: state policy
 
-app.get('/riskyCounties/:state', routes.getRiskyCounties); //this one can be added to state block1 in the future
+app.get('/riskyCounties/:state', routes.getRiskyCounties); //this one can be added to state block1/ in the future
 
 app.get('/riskyStates', routes.get10riskyStates); //for state block2
 
