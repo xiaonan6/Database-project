@@ -8,7 +8,7 @@ import {
 } from 'react-simple-maps';
 import labels from './StatesMapLabels';
 import InfoCard from './InfoCard';
-import { Grid } from '@material-ui/core';
+import { Card, CardContent, FormControl, FormControlLabel, FormLabel, Grid, RadioGroup, Radio } from '@material-ui/core';
 import DataContent from './DataContent.js'
 import { scaleQuantile } from 'd3-scale';
 
@@ -20,6 +20,7 @@ class StatesTab extends React.Component {
         super(props)
         this.handleReset = this.handleReset.bind(this)
         this.handleStatePick = this.handleStatePick.bind(this)
+        this.handleHeatMapSwitch = this.handleHeatMapSwitch.bind(this)
         this.state = {
             state: 'United States',
             allStateCases: [],
@@ -27,10 +28,12 @@ class StatesTab extends React.Component {
             data: [],
             allPolicy: [],
             policyDisplay: [],
+            heatMapSelection : 'none',
         }
     }
 
-    colorScale;
+    casesColorScale;
+    deathsColorScale;
     
     async componentDidMount() {
         await fetch(`http://localhost:8081/riskyStates`, {
@@ -54,7 +57,7 @@ class StatesTab extends React.Component {
         .then(res => res.json())
         .then(infoList => {
             if (!infoList) return
-            this.colorScale = scaleQuantile()
+            this.casesColorScale = scaleQuantile()
                 .domain(infoList.map((infoObj) => infoObj.total_Confirmed))
                 .range([
                 "#ffedea",
@@ -68,7 +71,6 @@ class StatesTab extends React.Component {
                 "#782618"
                 ])
             this.setState({allStateCases: infoList})
-            console.log(this.colorScale)
         })
         .catch(err => console.log(err))
     }
@@ -126,6 +128,11 @@ class StatesTab extends React.Component {
         .catch(err => console.log(err))
     }
 
+    async handleHeatMapSwitch(event, newValue) {
+        await this.setState({heatMapSelection: newValue})
+        console.log(this.state.heatMapSelection)
+    }
+
     render() {
         return (
         <>
@@ -153,7 +160,7 @@ class StatesTab extends React.Component {
                                     style={{
                                         default: {
                                             stroke: '#FFF',
-                                            fill: x ? this.colorScale(x.total_Confirmed) : "#EEE"
+                                            fill: x ? this.casesColorScale(x.total_Confirmed) : "#DDD"
                                         },
                                         hover: {
                                             fill: '#f24954'
@@ -189,7 +196,18 @@ class StatesTab extends React.Component {
             <Grid item xs={3}>
                 <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data} data2={this.state.policyDisplay}/>
                 <InfoCard title={'Top 10 Risky States'} resetHandler={this.handleReset} data={this.state.riskyList} display='none'/>
-                {/* radio button goes here*/}
+                <Card variant='outlined'>
+                    <CardContent>
+                        <FormControl component='fieldset'>
+                            <FormLabel component='legend'>Heat Map</FormLabel>
+                            <RadioGroup aria-label='heat map' name='heat map' value={this.state.heatMapSelection} onChange={this.handleHeatMapSwitch}>
+                                <FormControlLabel value='none' control={<Radio />} label="None"/>
+                                <FormControlLabel value='cases' control={<Radio />} label="By Cases"/>
+                                <FormControlLabel value='death' control={<Radio />} label="By Death"/>
+                            </RadioGroup>
+                        </FormControl>
+                    </CardContent>
+                </Card>
             </Grid>
         </Grid>
         </>
