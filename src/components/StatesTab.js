@@ -24,6 +24,7 @@ class StatesTab extends React.Component {
         this.state = {
             state: 'United States',
             allStateCases: [],
+            allStateDeaths: [],
             riskyList: [],
             data: [],
             allPolicy: [],
@@ -60,19 +61,43 @@ class StatesTab extends React.Component {
             this.casesColorScale = scaleQuantile()
                 .domain(infoList.map((infoObj) => infoObj.total_Confirmed))
                 .range([
-                "#ffedea",
-                "#ffcec5",
-                "#ffad9f",
-                "#ff8a75",
-                "#ff5533",
-                "#e2492d",
-                "#be3d26",
-                "#9a311f",
-                "#782618"
+                    "#fce8e8",
+                    "#f0cece",
+                    "#ebb5b5",
+                    "#e09494",
+                    "#db7b7b",
+                    "#d66363",
+                    "#c94f4f",
+                    "#ba3a3a",
+                    "#a12b2b",
+                    "#7a1c1c",
                 ])
             this.setState({allStateCases: infoList})
         })
         .catch(err => console.log(err))
+
+        await fetch(`http://localhost:8081/allDeathState`, {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        .then(infoList => {
+            if (!infoList) return
+            this.deathsColorScale = scaleQuantile()
+                .domain(infoList.map((infoObj) => infoObj.total_Deaths))
+                .range([
+                    "#d1d1d1",
+                    "#bababa",
+                    "#a3a3a3",
+                    "#919191",
+                    "#7d7d7d",
+                    "#6e6e6e",
+                    "#616161",
+                    "#4f4f4f",
+                ])
+            this.setState({allStateDeaths: infoList})
+        })
+        .catch(err => console.log(err))
+        
     }
 
     async handleReset() {
@@ -130,7 +155,6 @@ class StatesTab extends React.Component {
 
     async handleHeatMapSwitch(event, newValue) {
         await this.setState({heatMapSelection: newValue})
-        console.log(this.state.heatMapSelection)
     }
 
     render() {
@@ -143,7 +167,8 @@ class StatesTab extends React.Component {
                         {({ geographies }) => (
                         <>
                             {geographies.map(geo => {
-                                const x = this.state.allStateCases.find(s => s.State === geo.properties.name)
+                                const x = this.state.allStateCases.find(obj => obj.State === geo.properties.name)
+                                const y = this.state.allStateDeaths.find(obj => obj.State === geo.properties.name)
                                 return(
                                  <Geography
                                     key={geo.rsmKey}
@@ -160,7 +185,11 @@ class StatesTab extends React.Component {
                                     style={{
                                         default: {
                                             stroke: '#FFF',
-                                            fill: x ? this.casesColorScale(x.total_Confirmed) : "#DDD"
+                                            fill: this.state.heatMapSelection === 'cases' ? 
+                                                    x ? this.casesColorScale(x.total_Confirmed) : "#DDD"
+                                                    : this.state.heatMapSelection === 'death' ? 
+                                                    y ? this.deathsColorScale(y.total_Deaths) : "#DDD"
+                                                    : '#DDD'
                                         },
                                         hover: {
                                             fill: '#f24954'
