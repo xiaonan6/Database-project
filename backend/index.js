@@ -17,8 +17,7 @@ app.get('/riskyCounties/:state', routes.getRiskyCounties); //this one can be add
 
 app.get('/riskyStates', routes.get10riskyStates); //for state block2
 
-app.get('/countyCases/:county', routes.getCountyCasesByCounty); // for county block1
-
+app.get('/countyCases/:state/:county', routes.getCountyCasesByCounty); // for county block1
 
 app.get('/worldCases', routes.getWorldCases);
 
