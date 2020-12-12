@@ -2,8 +2,8 @@ import React from 'react'
 import MenuBar from '../components/MenuBar.js'
 import PropTypes from 'prop-types';
 import { AppBar, Box, Typography, Tabs, Tab } from '@material-ui/core'
-import StatesMap from '../components/StatesMap.js'
-import CountiesMap from '../components/CountiesMap.js'
+import StatesTab from '../components/StatesTab.js'
+import CountiesTab from '../components/CountiesTab.js'
 import ReactToolTip from 'react-tooltip'
 
 
@@ -38,11 +38,11 @@ export default class Main extends React.Component {
                   </Tabs>
                 </AppBar>
                 <TabPanel value={this.state.currentTab} index={0}>
-                  <StatesMap cases={1312412512} deaths={21312421} setTooltipContent={this.handleTooltipUpdate}/>
+                  <StatesTab setTooltipContent={this.handleTooltipUpdate}/>
                   <ReactToolTip>{this.state.toolTip}</ReactToolTip>
                 </TabPanel>
                 <TabPanel value={this.state.currentTab} index={1}>
-                  <CountiesMap setTooltipContent={this.handleTooltipUpdate}/>
+                  <CountiesTab setTooltipContent={this.handleTooltipUpdate}/>
                   <ReactToolTip>{this.state.toolTip}</ReactToolTip>
                 </TabPanel>
             </>

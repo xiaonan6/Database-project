@@ -7,12 +7,12 @@ import {
 } from 'react-simple-maps';
 import InfoCard from './InfoCard';
 import { Grid } from '@material-ui/core';
-import DataContent from './DataContent';
+//import DataContent from './DataContent';
 
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json';
 
-class CountiesMap extends React.Component {
+class CountiesTab extends React.Component {
     constructor(props) {
         super(props)
         this.handleReset = this.handleReset.bind(this)
@@ -101,4 +101,4 @@ class CountiesMap extends React.Component {
 
 
 
-export default memo(CountiesMap)
+export default memo(CountiesTab)
