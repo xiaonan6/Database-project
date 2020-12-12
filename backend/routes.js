@@ -26,12 +26,12 @@ function getStateCasesByState(req, res) {
         DATE_ADD(u.Date, INTERVAL 1 DAY) as Date
         from US_df u join US_region_df r ON u.FIPS = r.FIPS
         where r.State = '${state}')
-        ,countyCases as (SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
+    ,countyCases as (SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
         (u.Confirmed - y.yesterday_Confirmed) as today_Confirmed, (u.Deaths - y.yesterday_Deaths) as today_Deaths, 
         (u.Recovered - y.yesterday_Recovered) as today_Recovered
         FROM US_df u JOIN yesterday y ON u.FIPS = y.FIPS and u.Date = y.Date
         where u.Date = (select MAX(Date) from US_df))
-        SELECT a.State, sum(a.total_Confirmed) as total_Confirmed, sum(a.total_Deaths) as total_Deaths, sum(a.total_Recovered) as total_Recovered,
+    SELECT a.State, sum(a.total_Confirmed) as total_Confirmed, sum(a.total_Deaths) as total_Deaths, sum(a.total_Recovered) as total_Recovered,
         sum(a.today_Confirmed) as today_Confirmed, sum(a.today_Deaths) as today_Deaths, sum(a.today_Recovered) as today_Recovered
         from countyCases a
         group by State;
@@ -71,16 +71,16 @@ function getRiskyCounties(req, res) {
         FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
         where u.Date = (select MAX(Date) from US_df)
         GROUP BY r.County)
-        , riskyCounty AS( SELECT r.State, r.County, u.Confirmed
+    , riskyCounty AS( SELECT r.State, r.County, u.Confirmed
         FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS 
         WHERE u.Date = (select MAX(Date) from US_df) and r.State = '${state}'
         GROUP BY r.State
         HAVING u.Confirmed > (select AVG(u.Confirmed) from US_df u))
-        ,Total AS (SELECT u.Date, r.County, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
+    ,Total AS (SELECT u.Date, r.County, SUM(u.Confirmed) AS today_Confirmed, SUM(u.Deaths) AS today_Deaths, SUM(u.Recovered) AS today_Recovered
         FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS 
         WHERE u.Date = (select MAX(Date) from US_df)
         GROUP BY r.County)
-        SELECT a.Date, a.County, a.today_Confirmed, a.today_Deaths, a.today_Recovered,b.total_Confirmed, b.total_Deaths, b.total_Recovered
+    SELECT a.Date, a.County, a.today_Confirmed, a.today_Deaths, a.today_Recovered,b.total_Confirmed, b.total_Deaths, b.total_Recovered
         FROM Total a join temp b on a.County = b.County
         WHERE a.County IN (SELECT County FROM riskyCounty);
     `
@@ -122,12 +122,13 @@ function get10riskyStates(req, res) {
 //total number of cases & daily COUNTY increase
 function getCountyCasesByCounty(req, res) {
     var county = req.params.county
+    var state = req.params.state
     var query = `
     WITH yesterday AS (select u.FIPS, r.State, r.County, u.Confirmed AS yesterday_Confirmed, u.Deaths AS yesterday_Deaths, u.Recovered AS yesterday_Recovered, 
         DATE_ADD(u.Date, INTERVAL 1 DAY) as Date
         from US_df u join US_region_df r ON u.FIPS = r.FIPS
-        where r.County = '${county}')
-        SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
+        where r.County = '${county}' and r.State = '${state}')
+    SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
         (u.Confirmed - y.yesterday_Confirmed) as today_Confirmed, (u.Deaths - y.yesterday_Deaths) as today_Deaths, 
         (u.Recovered - y.yesterday_Recovered) as today_Recovered
         FROM US_df u JOIN yesterday y ON u.FIPS = y.FIPS and u.Date = y.Date

@@ -91,8 +91,8 @@ class StatesTab extends React.Component {
                 <>
                     <DataContent category='Confirmed Cases' value={infoObj.total_Confirmed}/>
                     <DataContent category='Deaths' value={infoObj.total_Deaths}/>
-                    <DataContent category="Today's Confirmed" value={infoObj.total_Confirmed}/>
-                    <DataContent category="Today's Deaths" value={infoObj.total_Deaths}/>
+                    <DataContent category="Today's Confirmed" value={infoObj.today_Confirmed}/>
+                    <DataContent category="Today's Deaths" value={infoObj.today_Deaths}/>
                 </>
             )
             this.setState({data: dataDiv})
