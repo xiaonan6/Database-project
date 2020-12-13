@@ -314,6 +314,6 @@ module.exports = {
     get10riskyStates: get10riskyStates,
     getStatePolicy: getStatePolicy,
     getUScases: getUScases,
-    get10riskyCounties: get10riskyCounties
+    get10riskyCounties: get10riskyCounties,
     get10RiskCountry: get10RiskCountry
 }
