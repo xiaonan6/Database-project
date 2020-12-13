@@ -8,8 +8,8 @@ var connection = mysql.createConnection({
     database: 'new_schema'
 })
 
-connection.connect(function(err) {
-    if(err) {
+connection.connect(function (err) {
+    if (err) {
         console.error('Database connection failed: ' + err.stack)
         return;
     }
@@ -36,7 +36,7 @@ function getStateCasesByState(req, res) {
         from countyCases a
         group by State;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -54,7 +54,7 @@ function getStatePolicy(req, res) {
     where p.PROVINCE_STATE_NAME = '${state}'
     and p.POLICY_ISSUE_DATE = (select MAX(p.POLICY_ISSUE_DATE) from US_Policy p where p.PROVINCE_STATE_NAME = '${state}');
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -84,7 +84,7 @@ function getRiskyCounties(req, res) {
         FROM Total a join temp b on a.County = b.County
         WHERE a.County IN (SELECT County FROM riskyCounty);
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             res.json(rows)
@@ -109,7 +109,7 @@ function get10riskyStates(req, res) {
         order by sum(a.total_Confirmed) desc, sum(a.today_Confirmed) desc
         limit 10;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -124,7 +124,7 @@ function getUScases(req, res) {
     from US_df u
     where u.Date = (select MAX(Date) from US_df);
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             res.json(rows)
@@ -148,7 +148,7 @@ function getCountyCasesByCounty(req, res) {
         FROM US_df u JOIN yesterday y ON u.FIPS = y.FIPS and u.Date = y.Date
         where u.Date = (select MAX(Date) from US_df);
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             res.json(rows)
@@ -172,7 +172,7 @@ function get10riskyCounties(req, res) {
     order by sum(a.total_Confirmed) desc, sum(a.today_Confirmed) desc
     limit 10;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             res.json(rows)
@@ -189,7 +189,7 @@ function getConfirmCaseAllStates(req, res) {
     where u.Date = (select MAX(Date) from US_df)
     GROUP BY r.State;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -205,7 +205,7 @@ function getConfirmDeathAllStates(req, res) {
     where u.Date = (select MAX(Date) from US_df)
     GROUP BY r.State;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -216,14 +216,14 @@ function getConfirmDeathAllStates(req, res) {
 ////////////World 
 //Get Total Confirmed Cases, Total Deaths, Total Recovered Cases by Country in DESC ORDER
 function getWorldCases(req, res) {
+    var country = req.params.country
+    console.log(country) // United States of America
     var query = `
-    SELECT w.Country, SUM(w.Confirmed) AS total_Confirmed, SUM(w.Deaths) AS total_Deaths, SUM(w.Recovered) AS total_Recovered
-    FROM World_df w
-    GROUP BY w.Country
-
-    ORDER BY SUM(w.Confirmed) DESC;
+    SELECT Country, Confirmed AS total_Confirmed, Deaths AS total_Deaths, Recovered AS total_Recovered
+    FROM World_df 
+    Where Date = (select MAX(Date) from World_df) and Country = '${country}';
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             res.json(rows)
@@ -233,19 +233,14 @@ function getWorldCases(req, res) {
 
 ///Today Recovered, Today Deaths, Today Confirmed
 function getDailyWorldCases(req, res) {
+    var country = req.params.country
     var query = `
-    SELECT r.State, sum(u.Confirmed) AS total_Confirmed
-    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
-    where u.Date = (select MAX(Date) from US_df)
-    GROUP BY r.State;
-    `
-    // With yesterday as (select Country,DATE_ADD(Date, INTERVAL 1 DAY) as Date, Confirmed, Deaths, Recovered
-    // from World_df)
-    // select DISTINCT w.Country, (w.Confirmed - y.Confirmed) as today_Confirmed,(w.Deaths - y.Deaths) as today_Deaths,(w.Recovered - y.Recovered) as today_Recovered
-    // from yesterday y join World_df w on y.Date = w.Date and y.Country = w.Country
-    // Where w.Date = (select MAX(Date) from US_df);
-    
-    connection.query(query, function(err, rows, fields) {
+With yesterday as (select Country,DATE_ADD(Date, INTERVAL 1 DAY) as Date, Confirmed, Deaths, Recovered from World_df) 
+select DISTINCT w.Country, (w.Confirmed - y.Confirmed) as today_Confirmed,(w.Deaths - y.Deaths) as today_Deaths,(w.Recovered - y.Recovered) as today_Recovered
+from yesterday y join World_df w on y.Date = w.Date and y.Country = w.Country
+Where w.Date = (select MAX(Date) from US_df)and w.Country = '${country}';
+        `
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -263,10 +258,9 @@ function get10RiskCountry(req, res) {
     Order by total_Confirmed DESC
     LIMIT 10;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
-            console.log(rows);
             res.json(rows)
         }
     })
@@ -281,7 +275,7 @@ function getConfirmCaseCountry(req, res) {
     Where Date = (select MAX(Date) from World_df)
     Group by Country;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -297,7 +291,7 @@ function getDealthsCaseCountry(req, res) {
     Where Date = (select MAX(Date) from World_df)
     Group by Country;
     `
-    connection.query(query, function(err, rows, fields) {
+    connection.query(query, function (err, rows, fields) {
         if (err) console.log(err)
         else {
             console.log(rows);
@@ -316,6 +310,11 @@ module.exports = {
     get10riskyStates: get10riskyStates,
     getStatePolicy: getStatePolicy,
     getUScases: getUScases,
-    get10riskyCounties: get10riskyCounties
+    get10riskyCounties: get10riskyCounties,
+    getDailyWorldCases: getDailyWorldCases,
+    getConfirmCaseCountry: getConfirmCaseCountry,
+    getDealthsCaseCountry: getDealthsCaseCountry,
+    get10RiskCountry: get10RiskCountry
+
 
 }
