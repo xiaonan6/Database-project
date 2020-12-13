@@ -25,7 +25,7 @@ export default class Landing extends React.Component {
                             Welcome to
                         </Typography>
                         <Typography align='center' variant='h2'>
-                            Should I go there?
+                            COVID-19 Tracker
                         </Typography>
                         <Typography align='center' variant='h6'>
                             A health and safety look up tool for your next travel plans.
@@ -78,14 +78,7 @@ export default class Landing extends React.Component {
                         <img src='https://smart.servier.com/wp-content/uploads/2016/10/world-map-update.png' alt='world map'/> 
                         </button>
                     </div>
-                
-                    
-
-                    
-                
-                
                 </div>
-                
             </div>
         )
     }
