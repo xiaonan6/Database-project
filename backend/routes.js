@@ -232,7 +232,24 @@ function getConfirmDeathAllStates(req, res) {
         }
     })
 }
-
+////////World 
+////For heat map
+//Total Confirmed 
+function getConfirmCaseCountry(req, res) {
+    var query = `
+    SELECT Country, sum(Confirmed) AS total_Confirmed
+    FROM World_df
+    Where Date = (select MAX(Date) from World_df)
+    Group by Country;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
 
 
 module.exports = {
