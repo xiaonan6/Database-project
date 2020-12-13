@@ -35,7 +35,7 @@ export default function MenuBar() {
                 <Toolbar justifycontent= 'space-between'>
                     <div className={classes.barDiv}>
                         <Link className={classes.titleLink} href='/'>
-                            CovidSQL
+                            Should I go there?
                         </Link>
                         <Link className={classes.pageLink} href='/'>
                             United States

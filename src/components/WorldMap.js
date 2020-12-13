@@ -143,7 +143,7 @@ class WorldMap extends React.Component {
                         key={geo.rsmKey}
                         geography={geo}
                         onMouseEnter={() => {
-                          const { NAME, POP_EST } = geo.properties;
+                          const { NAME } = geo.properties;
                           this.props.setTooltipContent(NAME)
                         }}
                         onMouseLeave={() => {

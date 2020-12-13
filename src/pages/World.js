@@ -40,7 +40,7 @@ export default class Main extends React.Component {
           <Worldsmap setTooltipContent={this.handleTooltipUpdate} />
           <ReactToolTip>{this.state.toolTip}</ReactToolTip>
         </TabPanel>
-       
+       </>
     )
   }
 }
