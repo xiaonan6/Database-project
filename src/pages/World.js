@@ -34,17 +34,13 @@ export default class Main extends React.Component {
         <AppBar position='static' color='default'>
           <Tabs value={this.state.currentTab} onChange={this.handleTabSwitch} aria-label="simple tabs example">
             <Tab label="World Map" />
-            <Tab label="Detailed Table" />
           </Tabs>
         </AppBar>
         <TabPanel value={this.state.currentTab} index={0}>
           <Worldsmap setTooltipContent={this.handleTooltipUpdate} />
           <ReactToolTip>{this.state.toolTip}</ReactToolTip>
         </TabPanel>
-        <TabPanel value={this.state.currentTab} index={1}>
-          Item Two
-                </TabPanel>
-      </>
+       
     )
   }
 }
