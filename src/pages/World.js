@@ -3,48 +3,55 @@ import MenuBar from '../components/MenuBar.js'
 import PropTypes from 'prop-types';
 import { AppBar, Box, Typography, Tabs, Tab } from '@material-ui/core'
 import Worldsmap from '../components/WorldMap.js'
+import ReactToolTip from 'react-tooltip'
+
 
 
 
 
 export default class Main extends React.Component {
-    constructor(props) {
-        super(props);
-        this.handleTabSwitch = this.handleTabSwitch.bind(this);
-        this.state = {
-          currentTab: 0
-        }
+  constructor(props) {
+    super(props);
+    this.handleTabSwitch = this.handleTabSwitch.bind(this);
+    this.handleTooltipUpdate = this.handleTooltipUpdate.bind(this);
+    this.state = {
+      currentTab: 0,
+      toolTip: ''
     }
+  }
 
-    async handleTabSwitch(event, newValue) {
-      await this.setState({currentTab: newValue})
-    }
+  async handleTabSwitch(event, newValue) {
+    await this.setState({ currentTab: newValue })
+  }
 
-
-    render() {
-        return(
-            <>
-                <MenuBar/>
-                <AppBar position='static' color='default'>
-                  <Tabs value={this.state.currentTab} onChange={this.handleTabSwitch} aria-label="simple tabs example">
-                    <Tab label="World Map" />
-                    <Tab label="Detailed Table" />
-                  </Tabs>
-                </AppBar>
-                <TabPanel value={this.state.currentTab} index={0}>
-                  <Worldsmap/>
+  handleTooltipUpdate(newValue) {
+    this.setState({ toolTip: newValue })
+  }
+  render() {
+    return (
+      <>
+        <MenuBar />
+        <AppBar position='static' color='default'>
+          <Tabs value={this.state.currentTab} onChange={this.handleTabSwitch} aria-label="simple tabs example">
+            <Tab label="World Map" />
+            <Tab label="Detailed Table" />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={this.state.currentTab} index={0}>
+          <Worldsmap setTooltipContent={this.handleTooltipUpdate} />
+          <ReactToolTip>{this.state.toolTip}</ReactToolTip>
+        </TabPanel>
+        <TabPanel value={this.state.currentTab} index={1}>
+          Item Two
                 </TabPanel>
-                <TabPanel value={this.state.currentTab} index={1}>
-                  Item Two
-                </TabPanel>
-            </>
-        )
-    }
+      </>
+    )
+  }
 }
 
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;  
+  const { children, value, index, ...other } = props;
   return (
     <div
       role="tabpanel"
@@ -61,10 +68,9 @@ function TabPanel(props) {
     </div>
   );
 }
-  
+
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
 };
-  
