@@ -248,6 +248,21 @@ function getConfirmCaseCountry(req, res) {
     })
 }
 
+function getDealthsCaseCountry(req, res) {
+    var query = `
+    SELECT Country, sum(Deaths) AS total_Deaths
+    FROM World_df
+    Where Date = (select MAX(Date) from World_df)
+    Group by Country;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
 
 module.exports = {
     getStateCasesByState: getStateCasesByState,
