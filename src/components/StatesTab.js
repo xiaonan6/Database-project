@@ -23,6 +23,7 @@ class StatesTab extends React.Component {
         this.handleHeatMapSwitch = this.handleHeatMapSwitch.bind(this)
         this.state = {
             state: 'United States',
+            USCases: [],
             allStateCases: [],
             allStateDeaths: [],
             riskyList: [],
@@ -49,6 +50,22 @@ class StatesTab extends React.Component {
             </>
             )
             this.setState({riskyList: dataDiv})
+        })
+        .catch(err => console.log(err))
+
+        await fetch(`http://localhost:8081/USCases`, {
+            method: 'GET'
+        })
+        .then(res => res.json())
+        .then(infoList => {
+            if (!infoList) return
+            let dataDiv = infoList.map((infoObj, i) => 
+            <>
+                <DataContent category='Total Cases' value={infoObj.total_Confirmed}/>
+                <DataContent category='Total Deaths' value={infoObj.total_Deaths}/>
+            </>
+            )
+            this.setState({USCases: dataDiv, data: dataDiv})
         })
         .catch(err => console.log(err))
 
@@ -101,7 +118,7 @@ class StatesTab extends React.Component {
     }
 
     async handleReset() {
-        await this.setState({state: 'United States', data: [], allPolicy: [], policyDisplay: []})
+        await this.setState({state: 'United States', data: this.state.USCases, allPolicy: [], policyDisplay: []})
     }
 
     async handleStatePick(newState) {
@@ -116,10 +133,10 @@ class StatesTab extends React.Component {
             if (!infoList) return
             let dataDiv = infoList.map((infoObj, i) =>
                 <>
-                    <DataContent category='Confirmed Cases' value={infoObj.total_Confirmed}/>
-                    <DataContent category='Deaths' value={infoObj.total_Deaths}/>
-                    <DataContent category="Today's Confirmed" value={infoObj.today_Confirmed}/>
-                    <DataContent category="Today's Deaths" value={infoObj.today_Deaths}/>
+                    <DataContent category='Total Cases' value={infoObj.total_Confirmed}/>
+                    <DataContent category='Total Deaths' value={infoObj.total_Deaths}/>
+                    <DataContent category="Today's New Cases" value={infoObj.today_Confirmed}/>
+                    <DataContent category="Today's New Deaths" value={infoObj.today_Deaths}/>
                 </>
             )
             this.setState({data: dataDiv})
@@ -224,7 +241,7 @@ class StatesTab extends React.Component {
             </Grid>
             <Grid item xs={3}>
                 <InfoCard title={this.state.state} resetHandler={this.handleReset} data={this.state.data} data2={this.state.policyDisplay}/>
-                <InfoCard title={'Top 10 Risky States'} resetHandler={this.handleReset} data={this.state.riskyList} display='none'/>
+                <InfoCard title={'Top 10 Risky States By Cases'} data={this.state.riskyList} display='none'/>
                 <Card variant='outlined'>
                     <CardContent>
                         <FormControl component='fieldset'>
