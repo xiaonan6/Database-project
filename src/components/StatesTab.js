@@ -186,7 +186,7 @@ class StatesTab extends React.Component {
                     let dataDiv = 
                     <>
                         <DataContent category='Policy' value={infoList[0].POLICY_NAME} link={infoList[0].POLICY_URL}/>
-                        <Popup buttonName='View All' title={`${this.state.state} Covid-19 Policies`} data={policyDiv}/>
+                        <Popup buttonName='View All Policies' title={`${this.state.state} Covid-19 Policies`} data={policyDiv}/>
                     </>;
                     this.setState({policyDisplay: dataDiv})
                 } else {

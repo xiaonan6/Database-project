@@ -239,12 +239,12 @@ function getDailyWorldCases(req, res) {
     where u.Date = (select MAX(Date) from US_df)
     GROUP BY r.State;
     `
-    With yesterday as (select Country,DATE_ADD(Date, INTERVAL 1 DAY) as Date, Confirmed, Deaths, Recovered
-    from World_df)
-    select DISTINCT w.Country, (w.Confirmed - y.Confirmed) as today_Confirmed,(w.Deaths - y.Deaths) as today_Deaths,(w.Recovered - y.Recovered) as today_Recovered
-    from yesterday y join World_df w on y.Date = w.Date and y.Country = w.Country
-    Where w.Date = (select MAX(Date) from US_df);
-        `
+    // With yesterday as (select Country,DATE_ADD(Date, INTERVAL 1 DAY) as Date, Confirmed, Deaths, Recovered
+    // from World_df)
+    // select DISTINCT w.Country, (w.Confirmed - y.Confirmed) as today_Confirmed,(w.Deaths - y.Deaths) as today_Deaths,(w.Recovered - y.Recovered) as today_Recovered
+    // from yesterday y join World_df w on y.Date = w.Date and y.Country = w.Country
+    // Where w.Date = (select MAX(Date) from US_df);
+    
     connection.query(query, function(err, rows, fields) {
         if (err) console.log(err)
         else {
