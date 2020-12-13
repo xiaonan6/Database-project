@@ -247,7 +247,7 @@ function getConfirmCaseCountry(req, res) {
         }
     })
 }
-
+//Total Deaths
 function getDealthsCaseCountry(req, res) {
     var query = `
     SELECT Country, sum(Deaths) AS total_Deaths
