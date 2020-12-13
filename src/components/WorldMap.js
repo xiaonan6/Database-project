@@ -34,7 +34,7 @@ export default class WorldMap extends React.Component {
                           key={geo.rsmKey}
                           geography={geo}
                           onMouseEnter={() => {
-                            const { NAME, POP_EST } = geo.properties;
+                          
                             
                           }}
                           onMouseLeave={() => {
