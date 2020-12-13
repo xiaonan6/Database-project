@@ -230,6 +230,27 @@ function getWorldCases(req, res) {
         }
     })
 }
+///Today Recovered, Today Deaths, Today Confirmed
+function getDailyWorldCases(req, res) {
+    var query = `
+    SELECT r.State, sum(u.Confirmed) AS total_Confirmed
+    FROM US_df u JOIN US_region_df r ON u.FIPS = r.FIPS
+    where u.Date = (select MAX(Date) from US_df)
+    GROUP BY r.State;
+    `
+    With yesterday as (select Country,DATE_ADD(Date, INTERVAL 1 DAY) as Date, Confirmed, Deaths, Recoveredfrom World_df)
+    select DISTINCT w.Country, (w.Confirmed - y.Confirmed) as today_Confirmed,(w.Deaths - y.Deaths) as today_Deaths,(w.Recovered - y.Recovered) as today_Recovered
+    from yesterday y join World_df w on y.Date = w.Date and y.Country = w.Country
+    Where w.Date = (select MAX(Date) from US_df);
+        `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
 ////For heat map
 //Total Confirmed 
 function getConfirmCaseCountry(req, res) {
