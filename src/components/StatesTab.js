@@ -8,9 +8,21 @@ import {
 } from 'react-simple-maps';
 import labels from './StatesMapLabels';
 import InfoCard from './InfoCard';
-import { Card, CardContent, FormControl, FormControlLabel, FormLabel, Grid, RadioGroup, Radio } from '@material-ui/core';
+import { 
+    Card, 
+    CardContent, 
+    FormControl, 
+    FormControlLabel, 
+    FormLabel, 
+    Grid, 
+    RadioGroup, 
+    Radio,
+    Typography, 
+    Divider,
+} from '@material-ui/core';
 import DataContent from './DataContent.js'
 import { scaleQuantile } from 'd3-scale';
+import Popup from './Popup.js'
 
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
@@ -21,6 +33,8 @@ class StatesTab extends React.Component {
         this.handleReset = this.handleReset.bind(this)
         this.handleStatePick = this.handleStatePick.bind(this)
         this.handleHeatMapSwitch = this.handleHeatMapSwitch.bind(this)
+        this.handleClickOpen = this.handleClickOpen.bind(this)
+        this.handleClickClose = this.handleClickClose.bind(this)
         this.state = {
             state: 'United States',
             USCases: [],
@@ -28,10 +42,18 @@ class StatesTab extends React.Component {
             allStateDeaths: [],
             riskyList: [],
             data: [],
-            allPolicy: [],
             policyDisplay: [],
             heatMapSelection : 'none',
+            viewPolicy: false,
         }
+    }
+
+    handleClickOpen() {
+        this.setState({viewPolicy : true})
+    }
+
+    handleClickClose() {
+        this.setState({viewPolicy : false})
     }
 
     casesColorScale;
@@ -149,12 +171,22 @@ class StatesTab extends React.Component {
         .then(res => res.json())
         .then(infoList => {
             if (!infoList) return
+            let policyDiv = infoList.map((infoObj, i) =>
+                <>
+                    <Typography variant='body1'>
+                        <b>Policy Name : </b><a href={infoObj.POLICY_URL} rel="noreferrer" target="_blank">{infoObj.POLICY_NAME}</a> <br/>
+                        <b>Policy Note : </b>{infoObj.POLICY_NOTE_TEXT} <br/>
+                    </Typography>
+                    <Divider/>
+                </>
+            )
             if (infoList.length !== 0) {
                 if (infoList.length > 1) {
                     //view more
                     let dataDiv = 
                     <>
                         <DataContent category='Policy' value={infoList[0].POLICY_NAME} link={infoList[0].POLICY_URL}/>
+                        <Popup buttonName='View All' title={`${this.state.state} Covid-19 Policies`} data={policyDiv}/>
                     </>;
                     this.setState({policyDisplay: dataDiv})
                 } else {
@@ -164,7 +196,7 @@ class StatesTab extends React.Component {
                     </>;
                     this.setState({policyDisplay: dataDiv})
                 }
-                // map allPolicy
+
             }
         })
         .catch(err => console.log(err))
