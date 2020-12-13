@@ -13,11 +13,15 @@ app.get('/stateCases/:state', routes.getStateCasesByState); //for state block1: 
 
 app.get('/statePolicy/:state', routes.getStatePolicy); //for state block1: state policy
 
-app.get('/riskyCounties/:state', routes.getRiskyCounties); //this one can be added to state block1/ in the future
+//app.get('/riskyCounties/:state', routes.getRiskyCounties); //this one can be added to state block1/ in the future
 
 app.get('/riskyStates', routes.get10riskyStates); //for state block2
 
 app.get('/countyCases/:state/:county', routes.getCountyCasesByCounty); // for county block1
+
+app.get('/riskyCounties', routes.get10riskyCounties); //for county block2
+
+app.get('/USCases', routes.getUScases);
 
 app.get('/worldCases', routes.getWorldCases);
 

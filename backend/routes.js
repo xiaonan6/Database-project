@@ -95,15 +95,15 @@ function getRiskyCounties(req, res) {
 //block2 for State
 function get10riskyStates(req, res) {
     var query = `
-        WITH yesterday AS (select u.FIPS, r.State, r.County, u.Confirmed AS yesterday_Confirmed, u.Deaths AS yesterday_Deaths, u.Recovered AS yesterday_Recovered, 
+    WITH yesterday AS (select u.FIPS, r.State, r.County, u.Confirmed AS yesterday_Confirmed, u.Deaths AS yesterday_Deaths, u.Recovered AS yesterday_Recovered, 
         DATE_ADD(u.Date, INTERVAL 1 DAY) as Date
         from US_df u join US_region_df r ON u.FIPS = r.FIPS)
-        ,countyCases as (SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
+    ,countyCases as (SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
         (u.Confirmed - y.yesterday_Confirmed) as today_Confirmed, (u.Deaths - y.yesterday_Deaths) as today_Deaths, 
         (u.Recovered - y.yesterday_Recovered) as today_Recovered
         FROM US_df u JOIN yesterday y ON u.FIPS = y.FIPS and u.Date = y.Date
         where u.Date = (select MAX(Date) from US_df))
-        SELECT a.State, sum(a.total_Confirmed) as total_Confirmed, sum(a.total_Deaths) as total_Deaths, 
+    SELECT a.State, sum(a.total_Confirmed) as total_Confirmed, sum(a.total_Deaths) as total_Deaths, 
         sum(a.today_Confirmed) as today_Confirmed, sum(a.today_Deaths) as today_Deaths
         from countyCases a group by State
         order by sum(a.total_Confirmed) desc, sum(a.today_Confirmed) desc
@@ -113,6 +113,20 @@ function get10riskyStates(req, res) {
         if (err) console.log(err)
         else {
             console.log(rows);
+            res.json(rows)
+        }
+    })
+}
+
+function getUScases(req, res) {
+    var query = `
+    SELECT SUM(u.Confirmed) AS total_Confirmed, SUM(u.Deaths) AS total_Deaths
+    from US_df u
+    where u.Date = (select MAX(Date) from US_df);
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
             res.json(rows)
         }
     })
@@ -142,6 +156,29 @@ function getCountyCasesByCounty(req, res) {
     })
 }
 
+function get10riskyCounties(req, res) {
+    var query = `
+    WITH yesterday AS (select u.FIPS, r.State, r.County, u.Confirmed AS yesterday_Confirmed, u.Deaths AS yesterday_Deaths, u.Recovered AS yesterday_Recovered, 
+        DATE_ADD(u.Date, INTERVAL 1 DAY) as Date
+        from US_df u join US_region_df r ON u.FIPS = r.FIPS)
+    ,countyCases as (SELECT y.State, y.County, u.Confirmed AS total_Confirmed, u.Deaths AS total_Deaths, u.Recovered AS total_Recovered,
+        (u.Confirmed - y.yesterday_Confirmed) as today_Confirmed, (u.Deaths - y.yesterday_Deaths) as today_Deaths, 
+        (u.Recovered - y.yesterday_Recovered) as today_Recovered
+        FROM US_df u JOIN yesterday y ON u.FIPS = y.FIPS and u.Date = y.Date
+        where u.Date = (select MAX(Date) from US_df))
+    SELECT a.State, a.County, sum(a.total_Confirmed) as total_Confirmed, sum(a.total_Deaths) as total_Deaths, 
+        sum(a.today_Confirmed) as today_Confirmed, sum(a.today_Deaths) as today_Deaths
+    FROM countyCases a group by a.County
+    order by sum(a.total_Confirmed) desc, sum(a.today_Confirmed) desc
+    limit 10;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            res.json(rows)
+        }
+    })
+}
 
 
 ////////////World 
@@ -163,6 +200,7 @@ function getWorldCases(req, res) {
 
 
 
+////////For heat map
 function getConfirmCaseAllStates(req, res) {
     var query = `
     SELECT r.State, sum(u.Confirmed) AS total_Confirmed
@@ -205,5 +243,7 @@ module.exports = {
     getConfirmCaseAllStates: getConfirmCaseAllStates,
     getConfirmDeathAllStates: getConfirmDeathAllStates,
     get10riskyStates: get10riskyStates,
-    getStatePolicy: getStatePolicy
+    getStatePolicy: getStatePolicy,
+    getUScases: getUScases,
+    get10riskyCounties: get10riskyCounties
 }
