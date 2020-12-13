@@ -37,7 +37,7 @@ export default function MenuBar() {
                         <Link className={classes.titleLink} href='/'>
                             Should I go there?
                         </Link>
-                        <Link className={classes.pageLink} href='/'>
+                        <Link className={classes.pageLink} href='/US'>
                             United States
                         </Link>
                         <Link className={classes.pageLink} href='/World'>

@@ -8,7 +8,7 @@ import ReactToolTip from 'react-tooltip'
 
 
 
-export default class Main extends React.Component {
+export default class US extends React.Component {
     constructor(props) {
         super(props);
         this.handleTabSwitch = this.handleTabSwitch.bind(this);
