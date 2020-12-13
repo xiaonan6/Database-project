@@ -181,25 +181,6 @@ function get10riskyCounties(req, res) {
 }
 
 
-////////////World 
-function getWorldCases(req, res) {
-    var query = `
-    SELECT w.Country, SUM(w.Confirmed) AS total_Confirmed, SUM(w.Deaths) AS total_Deaths, SUM(w.Recovered) AS total_Recovered
-    FROM World_df w
-    GROUP BY w.Country
-
-    ORDER BY SUM(w.Confirmed) DESC;
-    `
-    connection.query(query, function(err, rows, fields) {
-        if (err) console.log(err)
-        else {
-            res.json(rows)
-        }
-    })
-}
-
-
-
 ////////For heat map
 function getConfirmCaseAllStates(req, res) {
     var query = `
@@ -232,7 +213,23 @@ function getConfirmDeathAllStates(req, res) {
         }
     })
 }
-////////World 
+////////////World 
+//Get Total Confirmed Cases, Total Deaths, Total Recovered Cases by Country in DESC ORDER
+function getWorldCases(req, res) {
+    var query = `
+    SELECT w.Country, SUM(w.Confirmed) AS total_Confirmed, SUM(w.Deaths) AS total_Deaths, SUM(w.Recovered) AS total_Recovered
+    FROM World_df w
+    GROUP BY w.Country
+
+    ORDER BY SUM(w.Confirmed) DESC;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            res.json(rows)
+        }
+    })
+}
 ////For heat map
 //Total Confirmed 
 function getConfirmCaseCountry(req, res) {
