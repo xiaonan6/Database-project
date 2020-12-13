@@ -251,7 +251,26 @@ function getDailyWorldCases(req, res) {
         }
     })
 }
-////For heat map
+///TOP10 Current Risky Countries Based on Total Confirmed
+function get10RiskCountry(req, res) {
+    var query = `
+    SELECT DISTINCT Country, sum(Confirmed) AS total_Confirmed
+    FROM World_df
+    Where Date = (select MAX(Date) from World_df)
+    Group by Country
+    Order by total_Confirmed DESC
+    LIMIT 10;
+    `
+    connection.query(query, function(err, rows, fields) {
+        if (err) console.log(err)
+        else {
+            console.log(rows);
+            res.json(rows)
+        }
+    })
+}
+
+//////For World heat map
 //Total Confirmed 
 function getConfirmCaseCountry(req, res) {
     var query = `
