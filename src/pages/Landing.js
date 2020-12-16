@@ -70,7 +70,7 @@ export default class Landing extends React.Component {
                     <div style={{display: 'flex', justifyContent: 'center', marginTop: '5%', marginBottom: '10%'}}>
                         <button onClick={()=>window.location.href='/US'}>
                             Within the United States
-                        <img src='https://lh3.googleusercontent.com/proxy/3izoghNTOdMqOl5zLTtk1vthaPrqZE2Ey5qQq4Dn70crfT6kGmeLlDyKIvbR-9OeM5l1KwEmRfC0Np5eBNYnmuNmBaDNmz043cZUgQp9Gz-oL90vXhg' 
+                        <img src='https://lh3.googleusercontent.com/proxy/f1pok17Ku9uSA_SdVz1F2saCkSbOlnGRmKdCaFHymatbKY0fcovc8PL6WfpqfDvfoT76pfJplGrrFR745HXMGcMhBDN-DQwwcrBQh1iWrBWZL5p2_g0' 
                         alt='world map' href='/US'/> 
                         </button>
                         

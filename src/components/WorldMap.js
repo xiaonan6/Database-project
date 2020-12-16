@@ -25,7 +25,7 @@ class WorldMap extends React.Component {
     this.handleHeatMapSwitch = this.handleHeatMapSwitch.bind(this)
 
     this.state = {
-      country: 'world',
+      country: 'World',
       data: [],
       top10: [],
       policyDisplay: [],
@@ -62,7 +62,7 @@ class WorldMap extends React.Component {
   }
 
   async handleReset() {
-    await this.setState({ state: 'world', data: [], allPolicy: [], policyDisplay: [] })
+    await this.setState({ country: 'World', data: [], allPolicy: [], policyDisplay: [] })
   }
 
   async componentDidMount() {

@@ -17,7 +17,7 @@ app.get('/statePolicy/:state', routes.getStatePolicy); //for state block1: state
 
 app.get('/countyCases/:state/:county', routes.getCountyCasesByCounty); // for county block1
 
-app.get('/countryDailyCases/:country', routes.getDailyWorldCases);//for world block 1
+// app.get('/countryDailyCases/:country', routes.getDailyWorldCases);//for world block 1
 
 app.get('/worldCases/:country', routes.getWorldCases);//for word block 1 total cases
 
